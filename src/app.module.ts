@@ -1,10 +1,15 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './users/users.module';
 import { TypegooseModule } from "nestjs-typegoose";
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypegooseModule.forRoot("mongodb://auth_services:fleetrf1018@ds363038.mlab.com:63038/fr-auth-services", {
+    ConfigModule.forRoot({
+      envFilePath: '.env.development.local',
+      isGlobal: true
+    }),
+    TypegooseModule.forRoot(process.env.MONGODB_URI, {
       useNewUrlParser: true,
     }),
     UserModule,
