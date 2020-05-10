@@ -1,4 +1,4 @@
-### TypeScript + Nestjs + Fastify + Typogoose + MongoDB
+# TypeScript + Nestjs + Fastify + Typogoose + MongoDB
 
 ## Description
 
