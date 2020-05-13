@@ -8,6 +8,7 @@ import * as pickby from "lodash.pickby";
 
 @Injectable()
 export class UserService {
+    private readonly users: User;
     constructor(@InjectModel(User) private readonly userModel: ReturnModelType<typeof User>) {
     }
     projection = {
@@ -32,6 +33,11 @@ export class UserService {
             return this.returnResponse({}, false, 'User Data not found');
         }
         return this.returnResponse(user, true, 'User Data found');
+    }
+
+    async findOne(email: string): Promise<User | undefined> {
+        const user = await this.userModel.findOne({email}).exec();
+        return user;
     }
 
     async delete(deleteUserDto: DeleteUserDto): Promise<any> {

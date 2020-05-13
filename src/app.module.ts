@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
 import { UserModule } from './users/users.module';
 import { TypegooseModule } from "nestjs-typegoose";
 import { ConfigModule } from '@nestjs/config';
@@ -12,7 +13,8 @@ import { ConfigModule } from '@nestjs/config';
     TypegooseModule.forRoot(process.env.MONGODB_URI, {
       useNewUrlParser: true,
     }),
-    UserModule,
+    AuthModule,
+    UserModule
   ],
 })
 export class AppModule {}
