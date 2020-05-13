@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from 'nestjs-typegoose';
 import {ReturnModelType} from '@typegoose/typegoose';
 import { User } from "./users.model";
-import { CreateUserDto } from "./dto";
+import { CreateUserDto, DeleteUserDto } from "./dto";
 
 @Injectable()
 export class UserService {
@@ -15,30 +15,44 @@ export class UserService {
     async create(createUserDto: CreateUserDto): Promise<User | any> {
         const user = await this.userModel.findOne({email: createUserDto.email}, this.projection).exec();
         if(user) {
-            return {exists:'User Already Exists'};
+            return this.returnResponse({}, false, 'User Already Exists');
         }
         else {
             const createdUser = new this.userModel(createUserDto);
-            return await createdUser.save();
+            const user = await createdUser.save();
+            return this.returnResponse(user, true, 'User Created successfully');
         }
     }
 
-    async listUsers(): Promise<User[] | null> {
-        return await this.userModel.find({}, this.projection).exec();
+    async listUsers(): Promise<User | any> {
+        const user = await this.userModel.find({}, this.projection).exec();
+        if(!user.length) {
+            return this.returnResponse({}, false, 'User Data not found');
+        }
+        return this.returnResponse(user, true, 'User Data found');
     }
 
-    async delete(deleteUserDto: {id: string}): Promise<any> {
+    async delete(deleteUserDto: DeleteUserDto): Promise<any> {
         const {id} = deleteUserDto;
-        console.log(id);
         let delResponse;
         try {
-            delResponse = await this.userModel.find({_id: id['id']}).remove().exec();
-            delResponse = (delResponse.deletedCount) ? {success: true} : {NotExist: 'Id not Exists'};
+            delResponse = await this.userModel.deleteOne({_id: id['id']}).exec();
+            if(delResponse.deletedCount) {
+                delResponse = 'User deleted Successfully'
+            } else {
+                delResponse = 'User Not Found';
+            }
+            const success = (delResponse === 'User deleted Successfully') ? true : false;
+            return this.returnResponse({}, success, delResponse);
         } catch(err) {
             if(err.name === 'CastError') {
-                delResponse = {NotFound: 'User Id Not Found'};
+                delResponse = 'User Id Not Found';
             }
+            return this.returnResponse({}, false, delResponse);
         }
-        return delResponse;
+    }
+
+    async returnResponse(data: object, success: boolean, message: string): Promise<any> {
+        return {success, message, data};
     }
 }
