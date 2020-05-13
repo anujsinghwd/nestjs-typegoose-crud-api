@@ -27,7 +27,9 @@ export class UserService {
         return await this.userModel.find({}, this.projection).exec();
     }
 
-    async delete(id: string): Promise<any> {
+    async delete(deleteUserDto: {id: string}): Promise<any> {
+        const {id} = deleteUserDto;
+        console.log(id);
         let delResponse;
         try {
             delResponse = await this.userModel.find({_id: id['id']}).remove().exec();

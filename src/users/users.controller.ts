@@ -20,6 +20,6 @@ export class UserController {
 
   @Delete('/delete/:id')
   async delete(@Param() id: string): Promise<any> {
-    return await this.userService.delete(id); 
+    return await this.userService.delete({id});
   }
 }
