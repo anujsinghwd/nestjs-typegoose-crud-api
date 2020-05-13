@@ -2,7 +2,9 @@ import {Injectable} from '@nestjs/common';
 import {InjectModel} from 'nestjs-typegoose';
 import {ReturnModelType} from '@typegoose/typegoose';
 import { User } from "./users.model";
-import { CreateUserDto, DeleteUserDto } from "./dto";
+import { CreateUserDto, DeleteUserDto, LoginUserDto } from "./dto";
+import * as pickby from "lodash.pickby";
+
 
 @Injectable()
 export class UserService {
@@ -50,6 +52,18 @@ export class UserService {
             }
             return this.returnResponse({}, false, delResponse);
         }
+    }
+
+    async login(loginUserDto: LoginUserDto): Promise<any> {
+        const {email, password} = loginUserDto;
+        const user = await this.userModel.findOne({email: email}).exec();
+        if(!user){
+            return this.returnResponse({}, false, 'Email Not Found');
+        }   
+        if(user.password !== password) {
+            return this.returnResponse({}, false, 'Incorrect Password');
+        }
+        return this.returnResponse(pickby(user, (val, key) => (key === 'email' || key === 'name' || key === 'isActive')), true, 'User Login Success');
     }
 
     async returnResponse(data: object, success: boolean, message: string): Promise<any> {

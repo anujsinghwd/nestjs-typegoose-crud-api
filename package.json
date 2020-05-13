@@ -29,6 +29,7 @@
     "@typegoose/typegoose": "^7.0.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
+    "lodash.pickby": "^4.6.0",
     "mongodb-memory-server": "^6.6.0",
     "mongoose": "^5.9.13",
     "nestjs-typegoose": "^7.1.22",
